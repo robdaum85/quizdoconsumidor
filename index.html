@@ -239,6 +239,95 @@
   @media (min-height:1000px) and (orientation:portrait){ .header,.footer{ padding: var(--space-4) var(--space-5);} .btn{ min-height:64px; } }
   .progress{ height:16px; }
   .btn{ margin:2px; }
+
+
+  /* ===== Responsividade forte (layout base) ===== */
+.stage{
+  /* era: position:fixed; inset:0;  → isso quebrava rolagem e calculo de altura em mobile */
+  position: relative;
+  min-height: 100svh;                 /* usa Safe Viewport Height (iOS/Android novos) */
+  min-height: calc(var(--vh, 1vh) * 100); /* fallback p/ iOS antigo via JS abaixo */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.screen{ 
+  display:grid; 
+  place-items:center; 
+  padding: clamp(8px, 2vh, 24px); 
+  overflow:auto;                      /* permite rolar em telas pequenas */
+}
+
+.card{
+  width: min(1100px, 96vw);
+  max-height: calc(100svh - 160px);   /* evita estourar em telas pequenas */
+  max-height: calc((var(--vh, 1vh) * 100) - 160px);
+  overflow:auto;                      /* rola o conteúdo interno se necessário */
+}
+
+/* Header/Footer responsivos */
+.header, .footer{
+  flex-wrap: wrap;
+  gap: clamp(8px, 1.6vw, 16px);
+  padding: clamp(8px, 2vh, 18px) clamp(10px, 2vw, 24px);
+}
+
+/* HUD quebra bem em 2 linhas quando apertar */
+.hud{
+  gap: clamp(6px, 1.2vw, 12px);
+  flex: 1 1 auto;
+  justify-content: flex-end;
+}
+
+/* Timer e chips encolhem com clamp */
+.timerWrap{ width: clamp(64px, 9vw, 110px); height: clamp(64px, 9vw, 110px); }
+.chip{ font-size: clamp(12px, 2.2vw, 14px); padding: 10px 12px; }
+
+/* Inputs e botões */
+.inputs{ width: 100%; display:flex; justify-content:center; }
+.text{ width: min(560px, 94vw); }
+
+/* Alternativas (respostas) — grades mais flexíveis */
+.answers{
+  width: min(1000px, 100%);
+  display:grid;
+  gap: clamp(10px, 2vw, 18px);
+  margin-top: clamp(12px, 2vh, 20px);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 700px){
+  .answers{ grid-template-columns: repeat(2, minmax(260px, 1fr)); }
+}
+@media (min-width: 1200px){
+  .answers{ grid-template-columns: repeat(2, minmax(320px, 1fr)); }
+}
+
+/* Botões com tamanho-alvo mínimo confortável */
+.answer{
+  min-height: clamp(56px, 7vh, 76px);
+  padding: clamp(12px, 2vh, 20px) clamp(14px, 2vw, 22px);
+}
+
+/* CTA (Iniciar/Reset/etc.) com respiro e quebra decente */
+.cta{
+  gap: clamp(10px, 2vw, 22px);
+}
+.cta .btn{
+  min-height: 54px;
+  min-width: clamp(140px, 30vw, 240px);
+}
+
+/* Progresso ligeiramente mais alto em telas grandes */
+.progress{ height: clamp(12px, 1.8vh, 18px); }
+
+/* Canvas do fundo deve acompanhar área visível e não travar o layout */
+#bg8bit{
+  position: fixed; inset: 0;
+  width: 100dvw; height: 100dvh;     /* largura/altura dinâmicas */
+  pointer-events: none;
+  opacity: .28;
+}
+
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#24A653">
