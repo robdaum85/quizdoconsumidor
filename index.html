@@ -156,6 +156,59 @@
 
     /* remove scrollbars residuais */
     body::-webkit-scrollbar{display:none}
+
+    /* ========== MOBILE HOTFIX (iOS/Android) ========== */
+
+/* 1) Permite rolagem vertical global (acabou o corte de conteúdo) */
+html, body{
+  overflow-x: hidden;
+  overflow-y: auto;          /* era hidden */
+}
+
+/* 2) A tela deixa de ser “altura fixa” em telas estreitas
+      (ainda ocupa no mínimo a altura visível do dispositivo) */
+@media (max-width: 768px){
+  .stage{
+    height: auto;            /* era 100dvh preso */
+    min-height: 100svh;      /* usa Safe Viewport Height */
+  }
+  .screen{
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: clamp(10px, 2vh, 22px);
+    overflow: visible;       /* sem “scroll dentro do card” */
+  }
+  /* 3) O card pode crescer o quanto precisar (sem max-height) */
+  .card{
+    width: 100%;
+    max-width: 1100px;
+    max-height: none;        /* remove limite que criava scroll interno */
+    height: auto;
+  }
+  /* 4) Toolbar quebra bonitinho e centraliza */
+  .toolbar{
+    justify-content: center;
+    gap: 10px;
+  }
+  .toolbar .btn{
+    min-width: auto;
+    padding: .7em 1em;
+  }
+  /* 5) Ranking lateral continua oculto no mobile (para não empurrar largura) */
+  .sidebar{ display: none !important; }
+}
+
+/* 6) Evita qualquer barra horizontal por “sobra” de 1px */
+* { max-width: 100vw; }
+
+/* 7) Botões de resposta ocupam 100% e têm respiro confortável */
+.answers{ width: 100%; }
+.answer{ width: 100%; }
+
+/* 8) Footer com espaço para a área segura do iPhone */
+.footer{ padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px); }
+
+  
   </style>
 </head>
 <!-- Google tag (gtag.js) -->
@@ -167,13 +220,19 @@
 
   gtag('config', 'G-05H6KL6ZF1');
 </script>
+
+
 <body>
 
-<!-- corrige 100vh em iOS/Android antigos -->
 <script>
   function setVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
-  setVH(); addEventListener('resize', setVH); addEventListener('orientationchange', ()=>setTimeout(setVH,250));
+  setVH();
+  addEventListener('resize', setVH);
+  addEventListener('orientationchange', ()=>setTimeout(setVH, 300));
+  /* NOVO: muitos navegadores móveis disparam 'visibilitychange' após UI do navegador alterar a altura */
+  document.addEventListener('visibilitychange', ()=>setTimeout(setVH, 300));
 </script>
+
 
 <!-- fundo retro -->
 <canvas id="bg8bit" aria-hidden="true"></canvas>
