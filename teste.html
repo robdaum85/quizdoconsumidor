@@ -49,8 +49,15 @@ html,body{
   border-bottom:1px solid var(--ring); backdrop-filter: blur(6px);
   position:sticky; top:0; z-index:10; /* sempre visível ao rolar */
 }
-.h-left{display:flex;align-items:center;gap:10px}
+.h-left{display:flex;align-items:center;gap:8px}
 .logo{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-hi));display:grid;place-items:center;color:#021;font-weight:900;font-size:13px}
+/* Logo por imagem */
+.logoImg{
+  height:150px;            /* ajuste fino: 28px se quiser um pouco maior */
+  width:auto;
+  display:block;
+  image-rendering: -webkit-optimize-contrast;
+}
 .h-title{font-weight:800;letter-spacing:.2px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52vw}
 .h-right{display:flex;align-items:center;gap:8px}
 .minibtn{height:32px;padding:0 10px;font-weight:800;font-size:12px;border:3px solid #000;border-radius:10px;box-shadow:0 4px 0 #000;cursor:pointer;background:#1a204a;color:#fff}
@@ -164,8 +171,14 @@ section[hidden]{display:none}
   <!-- HEADER -->
   <header class="header" role="banner">
     <div class="h-left">
-      <div class="logo">QC</div>
-      <div class="h-title">SEDCON / Procon-RJ — Mobile Test</div>
+      <!-- Se quiser manter o “QC” quadradinho, descomente a linha abaixo -->
+      <!-- <div class="logo">QC</div> -->
+
+      <!-- Logo oficial (coloque logo.png na mesma pasta do mobile.html) -->
+      <img src="logo.png" alt="SEDCON / Procon-RJ" class="logoImg">
+
+      <!-- Texto auxiliar, se desejar manter -->
+      <!-- <div class="h-title">SEDCON / Procon-RJ — Mobile Test</div> -->
     </div>
     <div class="h-right">
       <select id="themeSel" class="select" aria-label="Tema">
