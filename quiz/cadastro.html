@@ -117,7 +117,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
   font-weight:900;font-size:16px; box-shadow:0 8px 0 #000; cursor:pointer; min-height:52px;
 }
 .btn.alt{background:linear-gradient(180deg,var(--accent),#b48a1d); color:#311}
-.btn.danger{background:linear-gradient(180deg,var(--danger),#8a1017); color:#fff}
+.btn.danger{background:linear-gradient(180deg,var(--danger),#8b1017); color:#fff}
 .btn.ghost{background:#0d1130; color:#fff}
 .btn:active{transform:translateY(3px); box-shadow:0 5px 0 #000}
 
@@ -130,10 +130,12 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
 .input::placeholder{color:#8892b0}
 .formGrid{display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:8px}
 
+/* WhatsApp prefixo */
+.whatsRow{display:flex;align-items:center;gap:6px}
+.whatsPrefix{font-weight:900;font-size:16px;color:var(--muted);background:#0d1130;border:4px solid #000;border-radius:12px;padding:0 10px;height:52px;display:grid;place-items:center}
+
 /* Linha de ações: centraliza INICIAR */
-.formRow{
-  display:grid; grid-template-columns:1fr; gap:10px; justify-items:center;
-}
+.formRow{ display:grid; grid-template-columns:1fr; gap:10px; justify-items:center; }
 .formRow .btn#btnStart{ width:min(260px, 70%); }
 
 /* Footer global */
@@ -206,6 +208,7 @@ html.kiosk-on .footer{ margin-top: 6px; }
   border-color:#00000022;
   box-shadow:inset 0 -3px 0 #00000010, 0 3px 0 #00000022;
 }
+:root[data-theme="light"] .whatsPrefix{ background:#ffffff; border-color:#00000022; }
 :root[data-theme="light"] .minibtn{
   background:#ffffff; color:#1d2636;
   border-color:#00000022; box-shadow:0 3px 0 #00000022;
@@ -294,7 +297,15 @@ html.kiosk-on .footer{ margin-top: 6px; }
 
           <div class="formGrid">
             <input id="playerName" class="input" aria-label="Nome" placeholder="Seu nome *" autocomplete="name" required>
-            <input id="playerEmail" class="input" aria-label="E-mail" placeholder="Seu e-mail *" inputmode="email" autocomplete="email" required>
+
+            <!-- WhatsApp com prefixo (21) -->
+            <div class="whatsRow">
+              <span class="whatsPrefix">(21)</span>
+              <input id="playerWhats" class="input" aria-label="WhatsApp"
+                     placeholder="Seu WhatsApp *"
+                     inputmode="numeric" pattern="[0-9]*" maxlength="9" required>
+            </div>
+
             <input id="playerInsta" class="input" aria-label="Instagram" placeholder="Instagram (ex.: @usuario)" inputmode="text" autocomplete="off">
           </div>
 
@@ -341,7 +352,7 @@ html.kiosk-on .footer{ margin-top: 6px; }
     </div>
   </main>
 
-  <footer class="footer">v3.1 — kiosk + light mode</footer>
+  <footer class="footer">v3.2 — kiosk + light mode + WhatsApp</footer>
 </div>
 
 <script>
@@ -392,7 +403,7 @@ document.getElementById('btnTheme')?.addEventListener('click', ()=>{
 
 /* Áudio */
 let audioCtx=null;
-const S={name:'Jogador',email:'',insta:'',pool:[],idx:0,ok:0,lives:CONFIG.LIVES,score:0,time:CONFIG.TIME,lock:false,tick:null,muted:true};
+const S={name:'Jogador',whats:'',insta:'',pool:[],idx:0,ok:0,lives:CONFIG.LIVES,score:0,time:CONFIG.TIME,lock:false,tick:null,muted:true};
 function ensureAudio(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch{} } }
 function blip(type,f,d,v){ if(!audioCtx||S.muted) return;
   const o=audioCtx.createOscillator(), g=audioCtx.createGain();
@@ -460,11 +471,25 @@ function loadContacts(){ try{return JSON.parse(localStorage.getItem(CONFIG.KEYS.
 function saveContacts(list){ localStorage.setItem(CONFIG.KEYS.CONTACTS, JSON.stringify(list)); }
 function addContact(c){ const list=loadContacts(); list.push({...c, id: Math.random().toString(36).slice(2), ts: Date.now()}); saveContacts(list); }
 
+/* Normalização do WhatsApp (apenas dígitos, garante DDD 21) */
+function normalizeWhats(s){
+  const digits=(s||'').replace(/\D+/g,'').slice(0,9); // até 9 dígitos do número
+  return '21' + digits.padEnd(9,''); // salva como 21xxxxxxxxx (11 dígitos no total)
+}
+function prettyWhats(s){
+  // formato (21) 9xxxx-xxxx se houver 9 dígitos após o DDD
+  const d=normalizeWhats(s);
+  const n=d.slice(2);
+  if(n.length<9) return `(21) ${n}`;
+  return `(21) ${n[0]}${n.slice(1,5)}-${n.slice(5,9)}`;
+}
+
+/* Exportar contatos (.txt) */
 async function exportContactsTxt(){
   const list=loadContacts();
   if(!list.length){ toast('Nenhum contato salvo ainda.'); return; }
-  const header='nome\temail\tinstagram\tquando\n';
-  const rows=list.map(r=>`${(r.name||'').trim()}\t${(r.email||'').trim()}\t${(r.insta||'').trim()}\t${new Date(r.ts).toLocaleString()}`).join('\n');
+  const header='nome\twhats\tinstagram\tquando\n';
+  const rows=list.map(r=>`${(r.name||'').trim()}\t${(r.whats||'').trim()}\t${(r.insta||'').trim()}\t${new Date(r.ts).toLocaleString()}`).join('\n');
   const blob=new Blob([header+rows+'\n'],{type:'text/plain;charset=utf-8'});
   const stamp=new Date().toISOString().slice(0,10);
   const fname=`contatos-${stamp}.txt`;
@@ -495,13 +520,15 @@ async function reset(){
 }
 async function start(){
   const name=($('#playerName').value||'').trim();
-  const email=($('#playerEmail').value||'').trim();
+  const whatsRaw=($('#playerWhats').value||'').trim();
   let insta=($('#playerInsta').value||'').trim();
   if(insta && !insta.startsWith('@')) insta='@'+insta.replace(/^@+/,'');
 
   S.name = name || 'Jogador';
-  S.email=email; S.insta=insta;
-  addContact({name:S.name,email:S.email,insta:S.insta});
+  S.whats = normalizeWhats(whatsRaw);
+  S.insta = insta;
+
+  addContact({name:S.name, whats:S.whats, insta:S.insta});
 
   await splash('START!'); ensureAudio(); try{audioCtx?.resume?.()}catch{}; sfx.start();
   await reset(); show('quiz'); nextQ();
@@ -567,14 +594,18 @@ function renderBoard(sel,list=loadBoard()){
 }
 
 /* Validação */
-const nameInput=$('#playerName'), emailInput=$('#playerEmail'), instaInput=$('#playerInsta');
-function validEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((s||'').trim()); }
+const nameInput=$('#playerName'), whatsInput=$('#playerWhats'), instaInput=$('#playerInsta');
+function validWhats(s){
+  // exige ao menos 8 dígitos (do móvel) — ideal: 9 dígitos no RJ
+  const d=(s||'').replace(/\D+/g,'');
+  return d.length>=8;
+}
 function validateForm(){
   const name=(nameInput.value||'').trim();
-  const email=(emailInput.value||'').trim();
-  $('#btnStart').disabled = !(name.length>1 && validEmail(email));
+  const phone=(whatsInput.value||'').trim();
+  $('#btnStart').disabled = !(name.length>1 && validWhats(phone));
 }
-[nameInput,emailInput,instaInput].forEach(el=>el.addEventListener('input', validateForm));
+[nameInput,whatsInput,instaInput].forEach(el=>el.addEventListener('input', validateForm));
 
 /* Controles principais */
 $('#btnStart').addEventListener('click', e=>{ e.preventDefault(); start(); });
@@ -584,15 +615,15 @@ $('#btnAgain').addEventListener('click', e=>{
   S.time=CONFIG.TIME; updateTimer(true);
   $('#score').textContent='0000';
   $('#lives').textContent='❤'.repeat(CONFIG.LIVES);
-  nameInput.value=''; emailInput.value=''; instaInput.value='';
-  S.name='Jogador'; S.email=''; S.insta='';
+  nameInput.value=''; whatsInput.value=''; instaInput.value='';
+  S.name='Jogador'; S.whats=''; S.insta='';
   $('#btnStart').disabled=true;
   show('start');
 });
 $('#btnReset').addEventListener('click', ()=>{
   clearInterval(S.tick); show('start');
-  nameInput.value=''; emailInput.value=''; instaInput.value='';
-  $('#btnStart').disabled=true; S.name='Jogador'; S.email=''; S.insta='';
+  nameInput.value=''; whatsInput.value=''; instaInput.value='';
+  $('#btnStart').disabled=true; S.name='Jogador'; S.whats=''; S.insta='';
   $('#score').textContent='0000'; $('#lives').textContent='❤❤❤';
   updateTimer(true);
   renderBoard('#boardTable');
@@ -601,7 +632,7 @@ $('#btnClearBoard').addEventListener('click', ()=>{ if(confirm('Limpar ranking l
 $('#btnMute').addEventListener('click',()=>{ S.muted=!S.muted; $('#btnMute').textContent=S.muted?'🔇':'🔊'; $('#btnMute').setAttribute('aria-pressed', String(!S.muted)); });
 $('#btnExport').addEventListener('click', exportContactsTxt);
 
-/* Temas antigos (mantidos para compat, mas não usados) */
+/* Temas antigos (compat, mas não usados) */
 const themeSel=$('#themeSel');
 function applyThemeOld(val){
   if(val==='contrast'){
@@ -623,10 +654,6 @@ themeSel?.addEventListener('change', e=>applyThemeOld(e.target.value));
 (function boot(){
   renderBoard('#boardTable'); updateTimer(true); validateForm();
 })();
-
-/* Safe viewport fix extra */
-function refreshVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
-window.addEventListener('resize', refreshVH);
 </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -7,12 +7,6 @@
 <meta name="theme-color" content="#24A653" />
 
 <style>
-/* =========================================================
-   MOBILE TEST (mobile.html)
-   - foco em celular (375–480px)
-   - header compacto com logo pequena
-   - uma coluna de respostas
-   ========================================================= */
 :root{
   --brand:#24A653; --brand-hi:#8ff5c1;
   --accent:#FFDA3A; --danger:#E5242A;
@@ -21,7 +15,7 @@
   --ring:#ffffff24; --radius:16px; --gap:12px; --vh:1vh;
   color-scheme: dark;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;max-width:100vw}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, Segoe UI, Roboto, Arial, sans-serif;overflow-x:hidden;overflow-y:auto}
 
 /* Palco */
@@ -35,7 +29,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
     var(--bg);
 }
 
-/* ========== HEADER COMPACTO ========== */
+/* Header compacto */
 .header{
   height:48px; display:flex; align-items:center; justify-content:space-between;
   padding: 0 10px;
@@ -46,15 +40,12 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
 .h-left{display:flex; align-items:center; gap:8px; min-width:0; flex:1 1 auto}
 .h-right{display:flex; align-items:center; gap:6px; flex:0 0 auto}
 
-/* Logo por imagem — PEQUENA no mobile */
-.logoImg{
-  height:80px; width:auto; display:block;
-  image-rendering:-webkit-optimize-contrast;
-}
+/* Logo pequena no mobile */
+.logoImg{ height:40px; width:auto; display:block; image-rendering:-webkit-optimize-contrast; }
 @media (min-width:420px){ .logoImg{ height:40px } }
 @media (min-width:480px){ .logoImg{ height:40px } }
 
-/* Controles compactos */
+/* Controles */
 .minibtn{
   height:30px; padding:0 8px; font-weight:800; font-size:12px;
   border:3px solid #000; border-radius:10px; box-shadow:0 4px 0 #000;
@@ -66,11 +57,9 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
   border:3px solid #000; border-radius:10px; height:30px; font-weight:800; font-size:11px;
   padding:0 6px; max-width:36vw; text-overflow:ellipsis;
 }
-@media (max-width:380px){
-  .select{ max-width:30vw; font-size:10px; padding:0 5px }
-}
+@media (max-width:380px){ .select{ max-width:30vw; font-size:10px; padding:0 5px } }
 
-/* ========= CONTEÚDO ========= */
+/* Conteúdo */
 .screen{display:grid;place-items:start;padding:12px}
 .kiosk{
   width:min(720px, 100%);
@@ -116,9 +105,10 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
 .progress{width:88%; height:10px; margin:6px auto 2px; background:#000; border:4px solid #000; border-radius:9px; overflow:hidden}
 .progress>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-hi));width:0%}
 
-/* Rodapé interno */
+/* Rodapé interno / “Brinde” oculto */
 .footerBox{display:flex;justify-content:center;align-items:center;gap:10px;padding:12px}
 .prize{padding:8px 10px;border:3px dashed #000;border-radius:12px;background: linear-gradient(180deg, #16205b, #0e1541); font-weight:900; font-size:14px}
+#prizeBox, #footPrize { display:none; } /* ocultar “Brinde” */
 
 /* Botões */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;
@@ -127,24 +117,9 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
   font-weight:900;font-size:16px; box-shadow:0 8px 0 #000; cursor:pointer; min-height:52px;
 }
 .btn.alt{background:linear-gradient(180deg,var(--accent),#b48a1d); color:#311}
-.btn.danger{background:linear-gradient(180deg,var(--danger),#8a1017); color:#fff}
+.btn.danger{background:linear-gradient(180deg,var(--danger),#8b1017); color:#fff}
+.btn.ghost{background:#0d1130; color:#fff}
 .btn:active{transform:translateY(3px); box-shadow:0 5px 0 #000}
-
-/* Estados e feedback */
-section[hidden]{display:none}
-.center{text-align:center}
-.pixel{letter-spacing:.4px}
-.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom, 0px) + 90px);transform:translateX(-50%);
-  background:#000;border:4px solid #fff;border-radius:12px;padding:12px 14px;font-weight:900;z-index:50;
-  font-size:16px; text-align:center; animation: pop .18s ease both, blink 1.1s steps(2,end) 3 .2s;
-}
-@keyframes pop{from{transform:translateX(-50%) scale(.9)}to{transform:translateX(-50%) scale(1)}}
-@keyframes blink{50%{opacity:.35}}
-@media (prefers-reduced-motion: reduce){ .toast{animation:none}}
-
-/* Splash */
-.splash{position:fixed;inset:0;background:#000;display:grid;place-items:center;color:var(--accent);font-weight:900;font-size:18px;animation:splash .7s ease both;z-index:80}
-@keyframes splash{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
 
 /* Inputs */
 .input{
@@ -153,13 +128,119 @@ section[hidden]{display:none}
   box-shadow:inset 0 -4px 0 rgba(0,0,0,.45),0 4px 0 #000;
 }
 .input::placeholder{color:#8892b0}
-.formRow{display:grid;grid-template-columns:1fr auto;gap:10px}
+.formGrid{display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:8px}
+
+/* WhatsApp prefixo */
+.whatsRow{display:flex;align-items:center;gap:6px}
+.whatsPrefix{font-weight:900;font-size:16px;color:var(--muted);background:#0d1130;border:4px solid #000;border-radius:12px;padding:0 10px;height:52px;display:grid;place-items:center}
+
+/* Linha de ações: centraliza INICIAR */
+.formRow{ display:grid; grid-template-columns:1fr; gap:10px; justify-items:center; }
+.formRow .btn#btnStart{ width:min(260px, 70%); }
 
 /* Footer global */
 .footer{display:flex;justify-content:center;align-items:center;height:40px;border-top:1px solid var(--ring);color:var(--muted);font-size:12px}
 
-/* Evita barra horizontal */
-*{max-width:100vw}
+/* esconde o seletor de tema padrão (mantido no HTML se quiser reativar) */
+.select{ display:none; }
+
+/* ---------- KIOSK MODE (totem vertical 43") ---------- */
+html.kiosk-on .logoImg{ height:48px; }
+html.kiosk-on .kiosk{
+  width:min(980px, 96vw);
+  min-height: calc(var(--vh) * 0.92);
+}
+html.kiosk-on .title{ font-size: clamp(26px, 3.8vh, 40px); }
+html.kiosk-on .q{     font-size: clamp(22px, 3.0vh, 30px); }
+html.kiosk-on .input,
+html.kiosk-on .btn,
+html.kiosk-on .answer{ font-size: clamp(18px, 2.2vh, 22px); }
+html.kiosk-on .answer{ min-height: 72px; }
+html.kiosk-on .btn{   min-height: 60px; }
+html.kiosk-on .timerWrap{ width:100px; height:100px; }
+html.kiosk-on .hud{ padding-top:16px; }
+html.kiosk-on .body{ gap: clamp(12px, 2vh, 22px); }
+html.kiosk-on .footer{ margin-top: 6px; }
+
+/* ===================== MODO CLARO (High-Ambient) ===================== */
+:root[data-theme="light"]{
+  --bg:#f7f9fc;
+  --panel:#ffffffcc;
+  --ink:#0e1320;
+  --muted:#5a6478;
+  --ring:#00000018;
+
+  --brand:#24A653; --brand-hi:#0bbd64;
+  --accent:#C28B00;
+  --danger:#C81E24;
+
+  --ans:#eef2f9;
+  --ans-ok:#e6f7ed;
+  --ans-bad:#fdecef;
+
+  color-scheme: light;
+}
+:root[data-theme="light"] .stage{
+  background:
+    radial-gradient(900px 700px at 80% -10%, #ffffff 0%, transparent 60%),
+    radial-gradient(600px 600px at 15% 10%, #ffffff 0%, transparent 60%),
+    var(--bg);
+}
+:root[data-theme="light"] .kiosk{
+  background: linear-gradient(180deg, var(--panel), #ffffffee);
+  border-color:#1e2a3a20;
+  box-shadow:0 8px 28px rgba(0,0,0,.12);
+}
+:root[data-theme="light"] .header{
+  background: linear-gradient(180deg,#ffffffd9,#ffffffc2);
+  border-bottom:1px solid var(--ring);
+  backdrop-filter:saturate(1.2) blur(8px);
+}
+:root[data-theme="light"] .title{ color:#C28B00; text-shadow:none; }
+:root[data-theme="light"] .q{ text-shadow:none; color:var(--ink); }
+:root[data-theme="light"] .badge{
+  background:#f1f4fa; border-color:#00000022;
+  box-shadow:inset 0 -3px 0 #00000010, 0 3px 0 #00000022;
+  color:var(--ink);
+}
+:root[data-theme="light"] .input{
+  background:#ffffff; color:var(--ink);
+  border-color:#00000022;
+  box-shadow:inset 0 -3px 0 #00000010, 0 3px 0 #00000022;
+}
+:root[data-theme="light"] .whatsPrefix{ background:#ffffff; border-color:#00000022; }
+:root[data-theme="light"] .minibtn{
+  background:#ffffff; color:#1d2636;
+  border-color:#00000022; box-shadow:0 3px 0 #00000022;
+}
+:root[data-theme="light"] .answer{
+  background:var(--ans); color:#0e1320;
+  border-color:#00000022; box-shadow:0 6px 0 #00000022;
+}
+:root[data-theme="light"] .answer.correct{ background:var(--ans-ok); }
+:root[data-theme="light"] .answer.wrong{   background:var(--ans-bad); }
+:root[data-theme="light"] .key{
+  background:#ffffff; color:#C28B00; border-color:#00000022;
+}
+:root[data-theme="light"] .btn{
+  color:#042; border-color:#00000022; box-shadow:0 6px 0 #00000022;
+}
+:root[data-theme="light"] .btn.alt{
+  background: linear-gradient(180deg,#FFDA3A,#e6b91b); color:#3a2a00;
+}
+:root[data-theme="light"] .btn.danger{
+  background: linear-gradient(180deg,var(--danger),#a01318); color:#fff;
+}
+:root[data-theme="light"] .btn.ghost{
+  background:#f1f4fa; color:#1d2636;
+}
+:root[data-theme="light"] .progress{ background:#e6e9f2; border-color:#00000022; }
+:root[data-theme="light"] .timerRingBg{ stroke:#00000022; }
+:root[data-theme="light"] .footer{ color:#6b7280; border-top:1px solid var(--ring); }
+:root[data-theme="light"] .prize{
+  background: linear-gradient(180deg, #ffffff, #f6f8fc);
+  border-color:#00000033; color:var(--ink);
+}
 </style>
 </head>
 <body>
@@ -168,15 +249,18 @@ section[hidden]{display:none}
   <!-- HEADER -->
   <header class="header" role="banner">
     <div class="h-left">
-      <!-- Logo oficial (coloque logo.png na mesma pasta) -->
       <img src="logo.png" alt="SEDCON / Procon-RJ" class="logoImg">
     </div>
     <div class="h-right">
-      <select id="themeSel" class="select" aria-label="Tema">
+      <!-- seletor de tema (opcional, fica oculto por CSS) -->
+      <!-- <select id="themeSel" class="select" aria-label="Tema">
         <option value="default">Padrão</option>
         <option value="contrast">Alto contraste</option>
         <option value="cvd">Daltônico-safe</option>
-      </select>
+      </select> -->
+      <button id="btnTheme" class="minibtn" title="Tema claro/escuro">☀️</button>
+      <button id="btnKiosk" class="minibtn" title="Kiosk mode">Kiosk</button>
+      <button id="btnExport" class="minibtn" title="Exportar contatos">.txt</button>
       <button id="btnMute" class="minibtn" aria-pressed="true" title="Som">🔇</button>
       <button id="btnReset" class="minibtn danger" title="Reset">Reset</button>
     </div>
@@ -207,10 +291,30 @@ section[hidden]{display:none}
 
         <!-- START -->
         <section id="start" class="center">
-          <div style="margin:6px 0 10px;color:var(--muted);font-size:14px">Digite seu nome e toque em Iniciar</div>
+          <div style="margin:6px 0 10px;color:var(--muted);font-size:14px">
+            Digite seus dados e toque em Iniciar
+          </div>
+
+          <div class="formGrid">
+            <input id="playerName" class="input" aria-label="Nome" placeholder="Seu nome *" autocomplete="name" required>
+
+            <!-- WhatsApp com prefixo (21) -->
+            <div class="whatsRow">
+              <span class="whatsPrefix">(21)</span>
+              <input id="playerWhats" class="input" aria-label="WhatsApp"
+                     placeholder="Seu WhatsApp *"
+                     inputmode="numeric" pattern="[0-9]*" maxlength="9" required>
+            </div>
+
+            <input id="playerInsta" class="input" aria-label="Instagram" placeholder="Instagram (ex.: @usuario)" inputmode="text" autocomplete="off">
+          </div>
+
           <div class="formRow">
-            <input id="playerName" class="input" aria-label="Nome" placeholder="Seu nome">
             <button id="btnStart" class="btn pixel" type="button" disabled>INICIAR</button>
+          </div>
+
+          <div style="color:var(--muted);font-size:12px;margin-top:6px">
+            * Somente armazenado no dispositivo para fins de contato no evento.
           </div>
         </section>
 
@@ -228,7 +332,6 @@ section[hidden]{display:none}
             <div class="badge" style="background:#001a0d">Acertos <span id="hits" class="pixel" style="margin-left:6px">0/0</span></div>
             <div class="badge" style="background:#1b0033">Score <span id="finalScore" class="pixel" style="margin-left:6px">0000</span></div>
           </div>
-          <div id="prizeBox" class="prize" style="margin-top:10px">Brinde: —</div>
 
           <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap">
             <button id="btnAgain" class="btn alt pixel">JOGAR NOVAMENTE</button>
@@ -242,41 +345,69 @@ section[hidden]{display:none}
         </section>
       </div>
 
-      <!-- Rodapé interno -->
+      <!-- Rodapé interno (brinde oculto) -->
       <div class="footerBox">
         <div class="prize" id="footPrize">Brinde: —</div>
       </div>
     </div>
   </main>
 
-  <footer class="footer">v3.0 — mobile test</footer>
+  <footer class="footer">v3.2 — kiosk + light mode + WhatsApp</footer>
 </div>
 
 <script>
-/* ================= MOBILE JS ================= */
+/* ============== Helpers ============== */
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const pad4=n=>String(n).padStart(4,'0');
 const show=id=>['start','quiz','result'].forEach(k=>document.getElementById(k).hidden=(k!==id));
 
-/* Safe viewport height (corrige barra de URL no mobile) */
+/* Safe viewport height */
 function setVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
-setVH(); addEventListener('resize', setVH, {passive:true});
-addEventListener('orientationchange', ()=>setTimeout(setVH, 250), {passive:true});
+setVH(); addEventListener('resize', setVH);
+addEventListener('orientationchange', ()=>setTimeout(setVH, 250));
 document.addEventListener('visibilitychange', ()=>setTimeout(setVH, 250));
 
-const CONFIG={N:5,TIME:60,LIVES:3,BOARD:5,KEYS:{BOARD:'procon_board',THEME:'procon_theme'}};
+const CONFIG={N:5,TIME:60,LIVES:3,BOARD:5,KEYS:{BOARD:'procon_board',THEME:'procon_theme',CONTACTS:'procon_contacts'}};
 const CIRC=326.7256;
 
-let audioCtx=null;
-const S={name:'Jogador',pool:[],idx:0,ok:0,lives:CONFIG.LIVES,score:0,time:CONFIG.TIME,lock:false,tick:null,muted:true};
+/* ============== Tema claro/escuro (high-ambient) ============== */
+const THEME_KEY = CONFIG.KEYS.THEME || 'procon_theme';
+function setTheme(theme){ // 'light' | 'dark' | 'auto'
+  if(theme === 'auto'){
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    document.documentElement.setAttribute('data-theme', prefersLight ? 'light' : 'dark');
+  }else{
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+  localStorage.setItem(THEME_KEY, theme);
+  const t = document.documentElement.getAttribute('data-theme');
+  const btn = document.getElementById('btnTheme');
+  if(btn) btn.textContent = (t === 'light') ? '🌙' : '☀️';
+}
+(function initTheme(){
+  const url = new URL(location.href);
+  const qp = (url.searchParams.get('theme')||'').toLowerCase(); // light | dark | auto
+  const saved = (localStorage.getItem(THEME_KEY)||'').toLowerCase();
+  const start = qp || saved || 'auto';
+  setTheme(start);
+  if(start==='auto' && window.matchMedia){
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', ()=>setTheme('auto'));
+  }
+})();
+document.getElementById('btnTheme')?.addEventListener('click', ()=>{
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = (cur==='light') ? 'dark' : 'light';
+  setTheme(next);
+});
 
+/* Áudio */
+let audioCtx=null;
+const S={name:'Jogador',whats:'',insta:'',pool:[],idx:0,ok:0,lives:CONFIG.LIVES,score:0,time:CONFIG.TIME,lock:false,tick:null,muted:true};
 function ensureAudio(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch{} } }
-function blip(type,f,d,v){
-  if(!audioCtx||S.muted) return;
+function blip(type,f,d,v){ if(!audioCtx||S.muted) return;
   const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-  o.type=type; o.frequency.value=f; g.gain.value=v;
-  o.connect(g); g.connect(audioCtx.destination);
+  o.type=type; o.frequency.value=f; g.gain.value=v; o.connect(g); g.connect(audioCtx.destination);
   o.start(); setTimeout(()=>{try{o.stop()}catch{}}, Math.max(60,d*1000));
 }
 const sfx={
@@ -286,6 +417,7 @@ const sfx={
   over(){[392,330,262].forEach((f,i)=>setTimeout(()=>blip('triangle',f,.12,.3),i*150));}
 };
 
+/* Banco de perguntas */
 const BANK=[
   { q:'Comprou pela internet e se arrependeu. Pode devolver?', a:['Não','Sim, em até 7 dias','Só se tiver defeito','Apenas com aval do vendedor'], c:1, tip:'Direito de arrependimento (7 dias).' },
   { q:'Cobrança indevida paga: seu direito é…', a:['Nada','Devolver o valor','Devolução em dobro','Voucher'], c:2, tip:'Repetição do indébito em dobro.' },
@@ -304,31 +436,102 @@ function pick(n){
   });
 }
 
+/* ---- Kiosk Mode ---- */
+const KM_KEY = 'procon_kiosk_mode';
+function applyKiosk(on){
+  document.documentElement.classList.toggle('kiosk-on', !!on);
+  // força tema claro no totem para reduzir reflexo
+  if(on){ setTheme('light'); }
+  setVH();
+}
+const savedKM = localStorage.getItem(KM_KEY) === '1';
+applyKiosk(savedKM);
+document.getElementById('btnKiosk').addEventListener('click', ()=>{
+  const on = !document.documentElement.classList.contains('kiosk-on');
+  applyKiosk(on);
+  localStorage.setItem(KM_KEY, on ? '1' : '0');
+});
+
+/* Timer */
 function updateTimer(reset){
   const r=$('#timerRing'), n=$('#timerNum');
-  if(reset){ r.style.strokeDashoffset='0'; n.textContent=S.time; return; }
+  if(reset){ r.style.strokeDashoffset='0'; r.style.stroke='var(--accent)'; n.textContent=S.time; return; }
   const p=Math.max(0,S.time/CONFIG.TIME);
   r.style.strokeDashoffset=String((1-p)*CIRC);
   r.style.stroke = (S.time<=10)?'#E5242A':'var(--accent)';
   n.textContent=S.time;
 }
 
-async function splash(text='START'){
-  const d=document.createElement('div'); d.className='splash'; d.textContent=text;
-  document.body.appendChild(d); await wait(700); d.remove();
+/* Splash/Toast */
+async function splash(text='START'){ const d=document.createElement('div'); d.className='splash'; d.textContent=text; document.body.appendChild(d); await wait(700); d.remove(); }
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),1400); }
+
+/* Contatos */
+function loadContacts(){ try{return JSON.parse(localStorage.getItem(CONFIG.KEYS.CONTACTS)||'[]')}catch{return[]} }
+function saveContacts(list){ localStorage.setItem(CONFIG.KEYS.CONTACTS, JSON.stringify(list)); }
+function addContact(c){ const list=loadContacts(); list.push({...c, id: Math.random().toString(36).slice(2), ts: Date.now()}); saveContacts(list); }
+
+/* Normalização do WhatsApp (apenas dígitos, garante DDD 21) */
+function normalizeWhats(s){
+  const digits=(s||'').replace(/\D+/g,'').slice(0,9); // até 9 dígitos do número
+  return '21' + digits.padEnd(9,''); // salva como 21xxxxxxxxx (11 dígitos no total)
 }
-function toast(msg){
-  const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
-  document.body.appendChild(t); setTimeout(()=>t.remove(),1400);
+function prettyWhats(s){
+  // formato (21) 9xxxx-xxxx se houver 9 dígitos após o DDD
+  const d=normalizeWhats(s);
+  const n=d.slice(2);
+  if(n.length<9) return `(21) ${n}`;
+  return `(21) ${n[0]}${n.slice(1,5)}-${n.slice(5,9)}`;
 }
 
+/* Exportar contatos (.txt) */
+async function exportContactsTxt(){
+  const list=loadContacts();
+  if(!list.length){ toast('Nenhum contato salvo ainda.'); return; }
+  const header='nome\twhats\tinstagram\tquando\n';
+  const rows=list.map(r=>`${(r.name||'').trim()}\t${(r.whats||'').trim()}\t${(r.insta||'').trim()}\t${new Date(r.ts).toLocaleString()}`).join('\n');
+  const blob=new Blob([header+rows+'\n'],{type:'text/plain;charset=utf-8'});
+  const stamp=new Date().toISOString().slice(0,10);
+  const fname=`contatos-${stamp}.txt`;
+
+  if(window.showSaveFilePicker){
+    try{
+      const handle=await showSaveFilePicker({suggestedName:fname, types:[{description:'Texto', accept:{'text/plain':['.txt']}}]});
+      const w=await handle.createWritable(); await w.write(blob); await w.close(); toast('Arquivo salvo ✅');
+      return;
+    }catch(e){ /* cancelado; fallback abaixo */ }
+  }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();}, 800);
+}
+
+/* Fluxo do jogo */
 async function reset(){
-  S.pool=pick(CONFIG.N); S.idx=0; S.ok=0; S.lives=CONFIG.LIVES; S.score=0; S.time=CONFIG.TIME; S.lock=false;
-  $('#score').textContent='0000'; $('#lives').textContent='❤'.repeat(S.lives); $('#bar').style.width='0%'; updateTimer(true);
+  S.pool=pick(CONFIG.N);
+  S.idx=0; S.ok=0;
+  S.lives=CONFIG.LIVES;
+  S.score=0;
+  S.time=CONFIG.TIME;
+  S.lock=false;
+  $('#score').textContent='0000';
+  $('#lives').textContent='❤'.repeat(S.lives);
+  $('#bar').style.width='0%';
+  updateTimer(true);
 }
 async function start(){
-  await splash('START!'); ensureAudio(); try{audioCtx?.resume?.()}catch{};
-  sfx.start(); await reset(); show('quiz'); nextQ();
+  const name=($('#playerName').value||'').trim();
+  const whatsRaw=($('#playerWhats').value||'').trim();
+  let insta=($('#playerInsta').value||'').trim();
+  if(insta && !insta.startsWith('@')) insta='@'+insta.replace(/^@+/,'');
+
+  S.name = name || 'Jogador';
+  S.whats = normalizeWhats(whatsRaw);
+  S.insta = insta;
+
+  addContact({name:S.name, whats:S.whats, insta:S.insta});
+
+  await splash('START!'); ensureAudio(); try{audioCtx?.resume?.()}catch{}; sfx.start();
+  await reset(); show('quiz'); nextQ();
   clearInterval(S.tick);
   S.tick=setInterval(()=>{ S.time--; updateTimer(); if(S.time<=0){ clearInterval(S.tick); over(); } },1000);
 }
@@ -342,15 +545,10 @@ function nextQ(){
     const b=document.createElement('button');
     b.className='answer';
     b.innerHTML=`<span class="key">${String.fromCharCode(65+i)}</span><span>${txt}</span>`;
-    b.addEventListener('click',()=>choose(i,b,it),{passive:true});
+    b.addEventListener('click',()=>choose(i,b,it));
     wrap.appendChild(b);
   });
-  // CORREÇÃO: cálculo da barra de progresso
-  const pct=(S.idx/S.pool.length)*100;
-  $('#bar').style.width = pct + '%';
-
-  // rola a pergunta para o topo visível (útil após teclado)
-  $('#qtext').scrollIntoView({behavior:'smooth', block:'start'});
+  $('#bar').style.width = ((S.idx/S.pool.length)*100) + '%';
 }
 
 async function choose(i,btn,it){
@@ -368,21 +566,18 @@ function finish(title){
   const total=S.pool.length;
   const entry={ id:uuid(), name:S.name||'Jogador', correct:S.ok, total, score:S.score, time:Math.max(0,S.time), prize:prizeFor(S.ok,total), ts:Date.now() };
   const board=addBoard(entry);
-  $('#resultTitle').textContent=title; $('#hits').textContent=`${S.ok}/${total}`; $('#finalScore').textContent=pad4(S.score);
-  $('#prizeBox').textContent=`Brinde: ${entry.prize}`; $('#footPrize').textContent=`Brinde: ${entry.prize}`; renderBoard('#boardTable',board);
+  $('#resultTitle').textContent=`${title}, ${S.name || 'Jogador'}! 🎉`;
+  $('#hits').textContent=`${S.ok}/${total}`; $('#finalScore').textContent=pad4(S.score);
+  renderBoard('#boardTable',board);
   show('result');
 }
-function win(){ clearInterval(S.tick); sfx.win(); splash('WIN!').then(()=>finish('PARABÉNS! 🎉')); }
-function over(){ clearInterval(S.tick); sfx.over(); splash('GAME OVER').then(()=>finish('FIM DE JOGO')); }
+function win(){ clearInterval(S.tick); sfx.win(); splash('WIN!').then(()=>finish('PARABÉNS')); }
+function over(){ clearInterval(S.tick); sfx.over(); splash('FIM DE JOGO').then(()=>finish('FIM DE JOGO')); }
 
-/* Leaderboard local */
+/* Leaderboard */
 function loadBoard(){ try{return JSON.parse(localStorage.getItem(CONFIG.KEYS.BOARD)||'[]')}catch{return[]} }
 function saveBoard(list){ localStorage.setItem(CONFIG.KEYS.BOARD, JSON.stringify(list)); }
-function addBoard(entry){
-  const list=loadBoard(); list.push(entry);
-  list.sort((a,b)=>(b.score-a.score)||(b.time-a.time));
-  const top=list.slice(0,CONFIG.BOARD); saveBoard(top); return top;
-}
+function addBoard(entry){ const list=loadBoard(); list.push(entry); list.sort((a,b)=>(b.score-a.score)||(b.time-a.time)); const top=list.slice(0,CONFIG.BOARD); saveBoard(top); return top; }
 function renderBoard(sel,list=loadBoard()){
   const t=$(sel); if(!t) return;
   if(!list.length){ t.innerHTML='<tr><td style="padding:6px 0">Sem resultados ainda.</td></tr>'; return; }
@@ -398,23 +593,48 @@ function renderBoard(sel,list=loadBoard()){
   t.innerHTML=rows;
 }
 
-/* Controles */
-const nameInput=$('#playerName');
-nameInput.addEventListener('input',()=>{ const v=(nameInput.value||'').trim(); $('#btnStart').disabled=v.length===0; S.name=v||'Jogador'; },{passive:true});
-$('#btnStart').addEventListener('click', e=>{e.preventDefault(); start();},{passive:true});
-$('#btnAgain').addEventListener('click', e=>{ e.preventDefault(); show('start'); nameInput.value=''; nameInput.placeholder='Seu nome'; $('#btnStart').disabled=true; S.name='Jogador'; },{passive:true});
-$('#btnReset').addEventListener('click', ()=>{
-  clearInterval(S.tick); show('start'); nameInput.value=''; $('#btnStart').disabled=true; S.name='Jogador';
-  $('#score').textContent='0000'; $('#lives').textContent='❤❤❤'; $('#footPrize').textContent='Brinde: —'; renderBoard('#boardTable');
-},{passive:true});
-$('#btnClearBoard').addEventListener('click', ()=>{ if(confirm('Limpar ranking local?')){ localStorage.setItem(CONFIG.KEYS.BOARD,'[]'); renderBoard('#boardTable'); }});
-$('#btnMute').addEventListener('click',()=>{
-  S.muted=!S.muted; $('#btnMute').textContent=S.muted?'🔇':'🔊'; $('#btnMute').setAttribute('aria-pressed', String(!S.muted));
-},{passive:true});
+/* Validação */
+const nameInput=$('#playerName'), whatsInput=$('#playerWhats'), instaInput=$('#playerInsta');
+function validWhats(s){
+  // exige ao menos 8 dígitos (do móvel) — ideal: 9 dígitos no RJ
+  const d=(s||'').replace(/\D+/g,'');
+  return d.length>=8;
+}
+function validateForm(){
+  const name=(nameInput.value||'').trim();
+  const phone=(whatsInput.value||'').trim();
+  $('#btnStart').disabled = !(name.length>1 && validWhats(phone));
+}
+[nameInput,whatsInput,instaInput].forEach(el=>el.addEventListener('input', validateForm));
 
-/* Temas */
+/* Controles principais */
+$('#btnStart').addEventListener('click', e=>{ e.preventDefault(); start(); });
+$('#btnAgain').addEventListener('click', e=>{
+  e.preventDefault();
+  clearInterval(S.tick);
+  S.time=CONFIG.TIME; updateTimer(true);
+  $('#score').textContent='0000';
+  $('#lives').textContent='❤'.repeat(CONFIG.LIVES);
+  nameInput.value=''; whatsInput.value=''; instaInput.value='';
+  S.name='Jogador'; S.whats=''; S.insta='';
+  $('#btnStart').disabled=true;
+  show('start');
+});
+$('#btnReset').addEventListener('click', ()=>{
+  clearInterval(S.tick); show('start');
+  nameInput.value=''; whatsInput.value=''; instaInput.value='';
+  $('#btnStart').disabled=true; S.name='Jogador'; S.whats=''; S.insta='';
+  $('#score').textContent='0000'; $('#lives').textContent='❤❤❤';
+  updateTimer(true);
+  renderBoard('#boardTable');
+});
+$('#btnClearBoard').addEventListener('click', ()=>{ if(confirm('Limpar ranking local?')){ localStorage.setItem(CONFIG.KEYS.BOARD,'[]'); renderBoard('#boardTable'); }});
+$('#btnMute').addEventListener('click',()=>{ S.muted=!S.muted; $('#btnMute').textContent=S.muted?'🔇':'🔊'; $('#btnMute').setAttribute('aria-pressed', String(!S.muted)); });
+$('#btnExport').addEventListener('click', exportContactsTxt);
+
+/* Temas antigos (compat, mas não usados) */
 const themeSel=$('#themeSel');
-function applyTheme(val){
+function applyThemeOld(val){
   if(val==='contrast'){
     const r=document.documentElement.style;
     r.setProperty('--bg','#000'); r.setProperty('--panel','#000'); r.setProperty('--ink','#fff'); r.setProperty('--muted','#ddd');
@@ -426,19 +646,14 @@ function applyTheme(val){
     r.setProperty('--brand','#2aa6f2'); r.setProperty('--accent','#ffd166'); r.setProperty('--ans','#1a234d');
     r.setProperty('--ans-ok','#1c4f7a'); r.setProperty('--ans-bad','#6b2f4a');
   }else{
-    document.documentElement.removeAttribute('style'); /* volta ao padrão */
+    document.documentElement.removeAttribute('style');
   }
   localStorage.setItem(CONFIG.KEYS.THEME,val);
 }
-themeSel.addEventListener('change', e=>applyTheme(e.target.value),{passive:true});
-(function bootTheme(){ const saved=localStorage.getItem(CONFIG.KEYS.THEME)||'default'; themeSel.value=saved; applyTheme(saved); })();
-
-/* Boot */
-document.addEventListener('DOMContentLoaded',()=>{ renderBoard('#boardTable'); updateTimer(true); });
-
-/* Safe viewport fix */
-function refreshVH(){ document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px'); }
-window.addEventListener('resize', refreshVH, {passive:true});
+themeSel?.addEventListener('change', e=>applyThemeOld(e.target.value));
+(function boot(){
+  renderBoard('#boardTable'); updateTimer(true); validateForm();
+})();
 </script>
 </body>
 </html>
