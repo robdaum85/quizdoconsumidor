@@ -417,16 +417,35 @@ const sfx={
   over(){[392,330,262].forEach((f,i)=>setTimeout(()=>blip('triangle',f,.12,.3),i*150));}
 };
 
-/* Banco de perguntas */
-const BANK=[
+/* Banco de perguntas — 22 itens no total; o jogo sorteia 5 por partida */
+const BANK = [
   { q:'Comprou pela internet e se arrependeu. Pode devolver?', a:['Não','Sim, em até 7 dias','Só se tiver defeito','Apenas com aval do vendedor'], c:1, tip:'Direito de arrependimento (7 dias).' },
   { q:'Cobrança indevida paga: seu direito é…', a:['Nada','Devolver o valor','Devolução em dobro','Voucher'], c:2, tip:'Repetição do indébito em dobro.' },
   { q:'Produto entregue diferente do contratado:', a:['Aceitar a variação','Exigir o contratado ou cancelar','Pedir 10% de desconto','Aguardar 30 dias'], c:1, tip:'Entrega deve corresponder.' },
   { q:'Recebeu produto não solicitado com boleto:', a:['Não pagar (é amostra grátis)','Pagar','Só se abrir a caixa','Guardar e pagar depois'], c:0, tip:'Envio sem pedido é proibido.' },
-  { q:'Preço menor na gôndola vs caixa:', a:['Vale o do caixa','Vale o menor preço','Divide ao meio','Nenhum'], c:1, tip:'Prevalece o menor.' },
+  { q:'Preço menor na gôndola vs caixa:', a:['Vale o do caixa','Vale o menor preço','Divide ao meio','Nenhum'], c:1, tip:'Prevalece o menor preço.' },
   { q:'Quem é consumidor pelo CDC?', a:['Apenas pessoa física','Pessoa física ou jurídica','Somente quem compra on-line','Apenas empresas'], c:1, tip:'Art. 2º: destinatário final.' },
-  { q:'Garantia legal para duráveis é de…', a:['30 dias','90 dias','6 meses','1 ano'], c:1, tip:'CDC art. 26 — 90 dias.' }
+  { q:'Garantia legal para duráveis é de…', a:['30 dias','90 dias','6 meses','1 ano'], c:1, tip:'CDC art. 26 — 90 dias.' },
+
+  { q:'Compra em loja física e se arrependeu. Pode trocar?', a:['Sim, em até 7 dias','A loja não é obrigada; só se tiver defeito','Somente com nota carimbada','Apenas nos fins de semana'], c:1, tip:'Troca só por política da loja; defeito é obrigatório.' },
+  { q:'Entrega atrasou além do combinado:', a:['Aguardar indefinidamente','Pagar multa','Pode cancelar e receber reembolso ou exigir entrega','Ir ao Procon antes de falar com a loja'], c:2, tip:'Descumprimento de oferta: pode cancelar ou exigir cumprimento.' },
+  { q:'Defeito não solucionado em 30 dias (produto durável):', a:['Aguardar mais 30 dias','Aceitar crédito na loja','Escolher: troca, abatimento ou devolução do valor','Apenas assistência técnica'], c:2, tip:'Art. 18: consumidor escolhe a solução.' },
+  { q:'Oferta/publicidade descumprida:', a:['Aceitar produto diferente','Exigir cumprimento da oferta ou desfazer a compra','Pedir 10% de desconto','Nada a fazer'], c:1, tip:'Oferta vincula o fornecedor.' },
+  { q:'Exigem comprar “garantia estendida” para vender o produto:', a:['É venda casada; pode recusar','Obrigatório por lei','Só em promoções','Apenas sem nota fiscal'], c:0, tip:'Venda casada é prática abusiva.' },
+
+  /* novas 10 */
+  { q:'Prazo para reclamar de vício em produto NÃO durável:', a:['7 dias','30 dias','90 dias','1 ano'], c:1, tip:'CDC art. 26: 30 dias (não duráveis).' },
+  { q:'O direito de arrependimento (7 dias) vale para…', a:['Apenas loja física','Compras fora do estabelecimento (internet/telefone)','Somente produtos importados','Somente se a loja oferecer'], c:1, tip:'Compras fora do estabelecimento: 7 dias.' },
+  { q:'Bar ou boate exige “consumo mínimo” para entrar. Isso é…', a:['Permitido se avisar','Venda casada e prática abusiva','Permitido só até R$ 50','Obrigatório por lei'], c:1, tip:'“Consumo mínimo” é prática abusiva.' },
+  { q:'Perdeu a comanda e querem cobrar valor cheio da casa. Pode?', a:['Sim, sempre','Não; é abusivo transferir o risco ao consumidor','Somente se assinar um termo','Apenas em dias de show'], c:1, tip:'O fornecedor responde pelo controle.' },
+  { q:'Furto ou dano em estacionamento conveniado (“não nos responsabilizamos”).', a:['Não responde se houver placa','Responde objetivamente pelos danos','Só responde com seguro do cliente','Depende do valor do carro'], c:1, tip:'Responsabilidade objetiva do fornecedor.' },
+  { q:'Garantia contratual oferecida pela loja:', a:['Substitui a garantia legal','É adicional à garantia legal e deve ser por escrito','Só vale com carimbo','Só cobre a embalagem'], c:1, tip:'Contratual soma à legal; deve ser escrita.' },
+  { q:'Preços diferentes para dinheiro e cartão:', a:['Proibido sempre','Permitido com informação prévia','Só em promoções','Apenas para débito'], c:1, tip:'Pode diferenciar se houver informação clara.' },
+  { q:'Assistência técnica e orçamento:', a:['Pode consertar sem orçamento','Deve apresentar orçamento prévio; diagnóstico só se informado','Orçamento é opcional','Pode cobrar qualquer valor depois'], c:1, tip:'CDC art. 40: orçamento prévio e transparente.' },
+  { q:'Produto sem manual em português ou informações claras:', a:['Tudo bem se tiver QR code','Obrigatório manual/rotulagem em português','Só se for eletrônico','Apenas se custar mais de R$500'], c:1, tip:'Direito à informação adequada e clara.' },
+  { q:'Peças de reposição após fim da fabricação:', a:['Loja não precisa manter','Fornecedor deve assegurar oferta por período razoável','Só a assistência oficial mantém','Apenas enquanto durar a garantia'], c:1, tip:'CDC art. 32: deve manter peças por tempo razoável.' }
 ];
+
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 function pick(n){
   const arr=shuffle(BANK.slice());
