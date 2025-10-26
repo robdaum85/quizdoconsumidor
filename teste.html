@@ -6,6 +6,15 @@
 <title>Quiz do Consumidor — mobile test</title>
 <meta name="theme-color" content="#24A653" />
 
+<!-- Google tag (gtag.js) — GA4 (não enviar PII) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-05H6KL6ZF1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-05H6KL6ZF1'); // NÃO enviar PII
+</script>
+
 <style>
 :root{
   --brand:#24A653; --brand-hi:#8ff5c1;
@@ -31,7 +40,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
 
 /* Header compacto */
 .header{
-  height:48px; display:flex; align-items:center; justify-content:space-between;
+  height:56px; display:flex; align-items:center; justify-content:space-between;
   padding: 0 10px;
   background: linear-gradient(180deg,#0e1436aa,#0b102c99);
   border-bottom:1px solid var(--ring); backdrop-filter: blur(6px);
@@ -40,14 +49,18 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
 .h-left{display:flex; align-items:center; gap:8px; min-width:0; flex:1 1 auto}
 .h-right{display:flex; align-items:center; gap:6px; flex:0 0 auto}
 
-/* Logo pequena no mobile */
-.logoImg{ height:40px; width:auto; display:block; image-rendering:-webkit-optimize-contrast; }
-@media (min-width:420px){ .logoImg{ height:40px } }
-@media (min-width:480px){ .logoImg{ height:40px } }
+/* Logos: escura e clara */
+.logoImg{ height:80px; width:auto; display:block; image-rendering:-webkit-optimize-contrast; }
+.logo-light { display:none; }
+@media (min-width:420px){ .logoImg{ height:44px } }
+
+/* No modo claro, troca a logo */
+:root[data-theme="light"] .logo-dark { display:none; }
+:root[data-theme="light"] .logo-light{ display:block; }
 
 /* Controles */
 .minibtn{
-  height:30px; padding:0 8px; font-weight:800; font-size:12px;
+  height:34px; padding:0 10px; font-weight:800; font-size:12px;
   border:3px solid #000; border-radius:10px; box-shadow:0 4px 0 #000;
   cursor:pointer; background:#1a204a; color:#fff; line-height:30px;
 }
@@ -145,7 +158,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui, 
 .select{ display:none; }
 
 /* ---------- KIOSK MODE (totem vertical 43") ---------- */
-html.kiosk-on .logoImg{ height:48px; }
+html.kiosk-on .logoImg{ height:52px; }
 html.kiosk-on .kiosk{
   width:min(980px, 96vw);
   min-height: calc(var(--vh) * 0.92);
@@ -249,15 +262,11 @@ html.kiosk-on .footer{ margin-top: 6px; }
   <!-- HEADER -->
   <header class="header" role="banner">
     <div class="h-left">
-      <img src="logo.png" alt="SEDCON / Procon-RJ" class="logoImg">
+      <!-- duas logos: escura e clara -->
+      <img src="/quiz/logo.png" alt="SEDCON / Procon-RJ" class="logoImg logo-dark">
+      <img src="/quiz/logoescura.png" alt="SEDCON / Procon-RJ" class="logoImg logo-light">
     </div>
     <div class="h-right">
-      <!-- seletor de tema (opcional, fica oculto por CSS) -->
-      <!-- <select id="themeSel" class="select" aria-label="Tema">
-        <option value="default">Padrão</option>
-        <option value="contrast">Alto contraste</option>
-        <option value="cvd">Daltônico-safe</option>
-      </select> -->
       <button id="btnTheme" class="minibtn" title="Tema claro/escuro">☀️</button>
       <button id="btnKiosk" class="minibtn" title="Kiosk mode">Kiosk</button>
       <button id="btnExport" class="minibtn" title="Exportar contatos">.txt</button>
@@ -352,8 +361,19 @@ html.kiosk-on .footer{ margin-top: 6px; }
     </div>
   </main>
 
-  <footer class="footer">v3.2 — kiosk + light mode + WhatsApp</footer>
+  <footer class="footer">v3.4 — GA4 + Google Forms + Light Logo</footer>
 </div>
+
+<!-- ===== Envio para Google Forms (oculto) ===== -->
+<iframe name="gf_target" style="display:none"></iframe>
+<form id="gf" action="https://docs.google.com/forms/d/e/1FAIpQLSfiE4TLU73_PadOI-hLeCT-RzQoIG19Yxx4ZurlBIQeyNBmxA/formResponse"
+      method="POST" target="gf_target" style="display:none">
+  <!-- Nome -->
+  <input type="hidden" name="entry.376918714" id="gf_name">
+  <!-- Telefone (11 dígitos, ex: 21 + 9xxxxxxx) -->
+  <input type="hidden" name="entry.1749651697" id="gf_phone">
+  <!-- Futuro: Instagram/score/etc — crie no Forms e adicione aqui -->
+</form>
 
 <script>
 /* ============== Helpers ============== */
@@ -371,6 +391,15 @@ document.addEventListener('visibilitychange', ()=>setTimeout(setVH, 250));
 const CONFIG={N:5,TIME:60,LIVES:3,BOARD:5,KEYS:{BOARD:'procon_board',THEME:'procon_theme',CONTACTS:'procon_contacts'}};
 const CIRC=326.7256;
 
+/* ===== GA4 helpers (sem PII) ===== */
+const ANALYTICS_ON = typeof gtag === 'function';
+const SESSION_ID = sessionStorage.getItem('session_id') || (()=> {
+  const id = (crypto?.randomUUID?.() || (Date.now()+'-'+Math.random().toString(36).slice(2)));
+  sessionStorage.setItem('session_id', id);
+  return id;
+})();
+function ev(name, params={}){ if(!ANALYTICS_ON) return; gtag('event', name, { session_id: SESSION_ID, ...params }); }
+
 /* ============== Tema claro/escuro (high-ambient) ============== */
 const THEME_KEY = CONFIG.KEYS.THEME || 'procon_theme';
 function setTheme(theme){ // 'light' | 'dark' | 'auto'
@@ -384,6 +413,7 @@ function setTheme(theme){ // 'light' | 'dark' | 'auto'
   const t = document.documentElement.getAttribute('data-theme');
   const btn = document.getElementById('btnTheme');
   if(btn) btn.textContent = (t === 'light') ? '🌙' : '☀️';
+  ev('theme_change', { theme: t });
 }
 (function initTheme(){
   const url = new URL(location.href);
@@ -417,39 +447,145 @@ const sfx={
   over(){[392,330,262].forEach((f,i)=>setTimeout(()=>blip('triangle',f,.12,.3),i*150));}
 };
 
-/* Banco de perguntas — 22 itens no total; o jogo sorteia 5 por partida */
+/* Banco de perguntas — 32 itens com IDs fixos (para anti-repetição e analytics) */
 const BANK = [
-  { q:'Comprou pela internet e se arrependeu. Pode devolver?', a:['Não','Sim, em até 7 dias','Só se tiver defeito','Apenas com aval do vendedor'], c:1, tip:'Direito de arrependimento (7 dias).' },
-  { q:'Cobrança indevida paga: seu direito é…', a:['Nada','Devolver o valor','Devolução em dobro','Voucher'], c:2, tip:'Repetição do indébito em dobro.' },
-  { q:'Produto entregue diferente do contratado:', a:['Aceitar a variação','Exigir o contratado ou cancelar','Pedir 10% de desconto','Aguardar 30 dias'], c:1, tip:'Entrega deve corresponder.' },
-  { q:'Recebeu produto não solicitado com boleto:', a:['Não pagar (é amostra grátis)','Pagar','Só se abrir a caixa','Guardar e pagar depois'], c:0, tip:'Envio sem pedido é proibido.' },
-  { q:'Preço menor na gôndola vs caixa:', a:['Vale o do caixa','Vale o menor preço','Divide ao meio','Nenhum'], c:1, tip:'Prevalece o menor preço.' },
-  { q:'Quem é consumidor pelo CDC?', a:['Apenas pessoa física','Pessoa física ou jurídica','Somente quem compra on-line','Apenas empresas'], c:1, tip:'Art. 2º: destinatário final.' },
-  { q:'Garantia legal para duráveis é de…', a:['30 dias','90 dias','6 meses','1 ano'], c:1, tip:'CDC art. 26 — 90 dias.' },
+  { id:'Q01', q:'Compra on-line: bateu arrependimento. Dá para desfazer a compra?',
+    a:['Não é possível','Sim, em até 7 dias corridos','Somente se o produto vier com defeito','Apenas com autorização do lojista'],
+    c:1, tip:'Direito de arrependimento: 7 dias para cancelar e ter reembolso total.' },
 
-  { q:'Compra em loja física e se arrependeu. Pode trocar?', a:['Sim, em até 7 dias','A loja não é obrigada; só se tiver defeito','Somente com nota carimbada','Apenas nos fins de semana'], c:1, tip:'Troca só por política da loja; defeito é obrigatório.' },
-  { q:'Entrega atrasou além do combinado:', a:['Aguardar indefinidamente','Pagar multa','Pode cancelar e receber reembolso ou exigir entrega','Ir ao Procon antes de falar com a loja'], c:2, tip:'Descumprimento de oferta: pode cancelar ou exigir cumprimento.' },
-  { q:'Defeito não solucionado em 30 dias (produto durável):', a:['Aguardar mais 30 dias','Aceitar crédito na loja','Escolher: troca, abatimento ou devolução do valor','Apenas assistência técnica'], c:2, tip:'Art. 18: consumidor escolhe a solução.' },
-  { q:'Oferta/publicidade descumprida:', a:['Aceitar produto diferente','Exigir cumprimento da oferta ou desfazer a compra','Pedir 10% de desconto','Nada a fazer'], c:1, tip:'Oferta vincula o fornecedor.' },
-  { q:'Exigem comprar “garantia estendida” para vender o produto:', a:['É venda casada; pode recusar','Obrigatório por lei','Só em promoções','Apenas sem nota fiscal'], c:0, tip:'Venda casada é prática abusiva.' },
+  { id:'Q02', q:'Pagou uma cobrança que não devia. O que a lei garante?',
+    a:['Nada, foi opção do cliente','Restituir o valor simples','Devolver em dobro o que foi cobrado a mais','Gerar um crédito para futura compra'],
+    c:2, tip:'Repetição do indébito em dobro, salvo engano justificável.' },
 
-  /* novas 10 */
-  { q:'Prazo para reclamar de vício em produto NÃO durável:', a:['7 dias','30 dias','90 dias','1 ano'], c:1, tip:'CDC art. 26: 30 dias (não duráveis).' },
-  { q:'O direito de arrependimento (7 dias) vale para…', a:['Apenas loja física','Compras fora do estabelecimento (internet/telefone)','Somente produtos importados','Somente se a loja oferecer'], c:1, tip:'Compras fora do estabelecimento: 7 dias.' },
-  { q:'Bar ou boate exige “consumo mínimo” para entrar. Isso é…', a:['Permitido se avisar','Venda casada e prática abusiva','Permitido só até R$ 50','Obrigatório por lei'], c:1, tip:'“Consumo mínimo” é prática abusiva.' },
-  { q:'Perdeu a comanda e querem cobrar valor cheio da casa. Pode?', a:['Sim, sempre','Não; é abusivo transferir o risco ao consumidor','Somente se assinar um termo','Apenas em dias de show'], c:1, tip:'O fornecedor responde pelo controle.' },
-  { q:'Furto ou dano em estacionamento conveniado (“não nos responsabilizamos”).', a:['Não responde se houver placa','Responde objetivamente pelos danos','Só responde com seguro do cliente','Depende do valor do carro'], c:1, tip:'Responsabilidade objetiva do fornecedor.' },
-  { q:'Garantia contratual oferecida pela loja:', a:['Substitui a garantia legal','É adicional à garantia legal e deve ser por escrito','Só vale com carimbo','Só cobre a embalagem'], c:1, tip:'Contratual soma à legal; deve ser escrita.' },
-  { q:'Preços diferentes para dinheiro e cartão:', a:['Proibido sempre','Permitido com informação prévia','Só em promoções','Apenas para débito'], c:1, tip:'Pode diferenciar se houver informação clara.' },
-  { q:'Assistência técnica e orçamento:', a:['Pode consertar sem orçamento','Deve apresentar orçamento prévio; diagnóstico só se informado','Orçamento é opcional','Pode cobrar qualquer valor depois'], c:1, tip:'CDC art. 40: orçamento prévio e transparente.' },
-  { q:'Produto sem manual em português ou informações claras:', a:['Tudo bem se tiver QR code','Obrigatório manual/rotulagem em português','Só se for eletrônico','Apenas se custar mais de R$500'], c:1, tip:'Direito à informação adequada e clara.' },
-  { q:'Peças de reposição após fim da fabricação:', a:['Loja não precisa manter','Fornecedor deve assegurar oferta por período razoável','Só a assistência oficial mantém','Apenas enquanto durar a garantia'], c:1, tip:'CDC art. 32: deve manter peças por tempo razoável.' }
+  { id:'Q03', q:'Recebeu um item diferente do anunciado. Qual a saída correta?',
+    a:['Aceitar a “equivalência”','Exigir o produto conforme oferta ou cancelar a compra','Pedir um abatimento simbólico','Esperar 30 dias para avaliar'],
+    c:1, tip:'Oferta vincula o fornecedor: cumprir o anunciado ou desfazer sem custo.' },
+
+  { id:'Q04', q:'Na gôndola está mais barato que no caixa. Qual preço vale?',
+    a:['O preço do caixa prevalece','O menor preço entre os exibidos','Faz-se a média dos valores','Nenhum, a loja decide'],
+    c:1, tip:'Prevalece o menor preço informado ao consumidor.' },
+
+  { id:'Q05', q:'Quem é reconhecido como consumidor pelo CDC?',
+    a:['Somente pessoa física','Pessoa física ou jurídica como destinatária final','Apenas quem compra pela internet','Somente empresas'],
+    c:1, tip:'Art. 2º do CDC: destinatário final do produto/serviço.' },
+
+  { id:'Q06', q:'Garantia legal para bens duráveis (sem custo) é de…',
+    a:['30 dias','90 dias','6 meses','1 ano'],
+    c:1, tip:'CDC art. 26: 90 dias para vícios em produtos/serviços duráveis.' },
+
+  { id:'Q07', q:'Entrega passou do prazo prometido. O que o consumidor pode exigir?',
+    a:['Aguardar por tempo indeterminado','Pagar multa à loja','Cumprimento imediato ou cancelamento com reembolso','Ir direto ao Procon sem falar com a loja'],
+    c:2, tip:'Descumprida a oferta, pode exigir cumprimento ou desfazer com devolução.' },
+
+  { id:'Q08', q:'Produto durável ficou com defeito e não foi consertado em 30 dias. E agora?',
+    a:['Aguardar mais 30 dias','Aceitar crédito na loja','Escolher: substituição, abatimento no preço ou devolução do valor','Apenas acionar a assistência técnica'],
+    c:2, tip:'Art. 18: consumidor escolhe a solução após o prazo de reparo.' },
+
+  { id:'Q09', q:'Anúncio descumprido (promo prometida não foi honrada). Qual o seu direito?',
+    a:['Aceitar outro produto','Exigir o cumprimento do anunciado ou desfazer o negócio','Pedir “descontinho” de 10%','Não há o que fazer'],
+    c:1, tip:'Oferta publicitária obriga o fornecedor.' },
+
+  { id:'Q10', q:'Vendem o produto só se levar “garantia estendida”. Isso é…',
+    a:['Venda casada (prática abusiva)','Obrigatório por lei','Permitido em promoções','Válido apenas sem nota fiscal'],
+    c:0, tip:'Condicionar a compra à garantia estendida é venda casada.' },
+
+  { id:'Q11', q:'Assistência técnica: pode executar serviço sem orçamento aprovado?',
+    a:['Pode, se for urgente','Deve apresentar orçamento prévio; diagnóstico só se informado','É facultativo apresentar orçamento','Pode cobrar depois qualquer valor'],
+    c:1, tip:'CDC art. 40: orçamento prévio e informação clara de diagnósticos/custos.' },
+
+  { id:'Q12', q:'Produto essencial deu defeito logo no início. O que pode exigir?',
+    a:['Esperar 30 dias para conserto','Troca, reembolso ou abatimento imediatamente','Somente levar à assistência','Apenas um desconto simbólico'],
+    c:1, tip:'Para vício em produto essencial, cabe solução imediata.' },
+
+  { id:'Q13', q:'Cancelou compra on-line no prazo de 7 dias. O reembolso inclui…',
+    a:['Só o valor do item','Metade do frete','Produto + frete (valor total pago)','Apenas vale-compra'],
+    c:2, tip:'No arrependimento, a devolução é integral, inclusive frete.' },
+
+  { id:'Q14', q:'Cobrança com ameaça ou humilhação (“vexatória”) é…',
+    a:['Permitida com dívida ativa','Permitida até duas vezes por dia','Proibida pelo CDC','Permitida apenas por carta'],
+    c:2, tip:'Cobrança não pode expor o consumidor ao ridículo ou ameaça.' },
+
+  { id:'Q15', q:'Negativar nome em SPC/Serasa sem avisar antes:',
+    a:['É permitido','Depende do valor da dívida','É vedado: precisa notificação prévia','Só com ordem judicial'],
+    c:2, tip:'Órgão de proteção ao crédito deve notificar previamente o consumidor.' },
+
+  { id:'Q16', q:'Loja sem troco quer impor “vale” obrigatório. Pode?',
+    a:['Pode sempre','Não; o consumidor pode exigir troco em dinheiro','Só se faltar menos de R$ 1,00','Apenas em liquidações'],
+    c:1, tip:'Fornecedora deve providenciar o troco; vale só se o cliente concordar.' },
+
+  { id:'Q17', q:'Cobrança de “taxa para emitir boleto/carnê” ao cliente:',
+    a:['Permitida por custo bancário','Permitida até certo valor','Abusiva: custo operacional do fornecedor','Permitida só em compras on-line'],
+    c:2, tip:'Transferir custo do meio de cobrança ao consumidor é prática abusiva.' },
+
+  { id:'Q18', q:'Sem nota fiscal: a loja pode negar atendimento por vício?',
+    a:['Sim, nota é indispensável','Sim, se for eletrônico','Não; valem outros comprovantes (extrato, e-mail, etiqueta)','Só com garantia estendida'],
+    c:2, tip:'Qualquer prova idônea de compra serve para garantir o direito.' },
+
+  { id:'Q19', q:'Achou alimento vencido no mercado. O que exigir?',
+    a:['Aceitar desconto e levar','Solicitar brinde','Troca por produto válido ou devolução do que pagou','Nada a fazer'],
+    c:2, tip:'É vedada a venda de produto vencido; cabe troca ou devolução.' },
+
+  { id:'Q20', q:'A “taxa de serviço/gorjeta (10%)” no restaurante é…',
+    a:['Obrigatória','Facultativa ao consumidor','Obrigatória aos domingos','Somente em dinheiro'],
+    c:1, tip:'Serviço é opcional e deve ser informado de forma clara.' },
+
+  { id:'Q21', q:'Serviço mal executado (instalação/conserto). Qual a solução correta?',
+    a:['Cliente paga novamente','Fornecedor reexecuta sem custo ou restitui proporcionalmente','Somente vale-compra','Nada a ser feito'],
+    c:1, tip:'Direito à reexecução sem custo, ou restituição proporcional do preço.' },
+
+  { id:'Q22', q:'Comprou por marketplace e surgiu problema no produto. Quem responde?',
+    a:['Exclusivamente o vendedor','Apenas a plataforma','Todos na cadeia de fornecimento podem responder solidariamente','Ninguém se for promoção'],
+    c:2, tip:'Responsabilidade solidária entre integrantes da cadeia de consumo.' },
+
+  /* ——— NOVAS (10) ——— */
+  { id:'Q23', q:'Produto apresentou defeito depois de um tempo de uso, dentro da garantia. O que fazer primeiro?',
+    a:['Ir direto ao Procon','Levar à assistência técnica autorizada','Pedir reembolso imediato','Esperar o fabricante entrar em contato'],
+    c:1, tip:'Durante a garantia, o reparo deve ser feito pela assistência autorizada.' },
+
+  { id:'Q24', q:'O fornecedor descobriu um defeito oculto no produto após o prazo da garantia. O consumidor perde o direito?',
+    a:['Sim, acabou o prazo','Não; o vício oculto gera novo prazo de 90 dias ao ser identificado','Depende do valor do produto','Somente se tiver nota carimbada'],
+    c:1, tip:'Vício oculto renova o prazo a partir do momento em que o problema aparece.' },
+
+  { id:'Q25', q:'Cancelou um serviço contínuo (TV, internet, academia). O que a empresa pode cobrar?',
+    a:['Multa proporcional, se prevista e informada','Todo o valor do contrato','Nada, se o consumidor desistir','Taxa fixa de cancelamento'],
+    c:0, tip:'Pode cobrar multa proporcional apenas se estava prevista no contrato e informada.' },
+
+  { id:'Q26', q:'Propaganda diz “tudo grátis”, mas há cobrança de taxa. Isso é…',
+    a:['Propaganda criativa','Publicidade enganosa','Venda casada','Permitido se for taxa simbólica'],
+    c:1, tip:'Publicidade enganosa: informação falsa ou omissa induz o consumidor ao erro.' },
+
+  { id:'Q27', q:'Loja exige depósito antecipado para garantir preço promocional, sem contrato. O que fazer?',
+    a:['Pagar e guardar o comprovante','Exigir documento formal da oferta antes do pagamento','Aguardar contato da loja','Não há risco algum'],
+    c:1, tip:'Exija comprovação da oferta; promessas verbais não têm validade jurídica.' },
+
+  { id:'Q28', q:'Em fila de atendimento, quem tem prioridade por lei?',
+    a:['Idosos, gestantes, lactantes, PCDs e pessoas com criança de colo','Apenas idosos','Somente gestantes e pessoas com deficiência','Quem estiver com pressa'],
+    c:0, tip:'Lei 10.048/2000 garante atendimento prioritário a grupos específicos.' },
+
+  { id:'Q29', q:'Empresa compartilhou seus dados pessoais com terceiros sem autorização. Isso fere…',
+    a:['O CDC e a LGPD','Apenas a LGPD','Apenas o CDC','Nenhuma norma'],
+    c:0, tip:'A proteção de dados é garantida pela LGPD e o CDC protege a privacidade do consumidor.' },
+
+  { id:'Q30', q:'O estabelecimento afixa “Não nos responsabilizamos por objetos deixados”. Esse aviso é…',
+    a:['Válido legalmente','Apenas decorativo','Não afasta a responsabilidade do fornecedor','Obrigatório por lei'],
+    c:2, tip:'Avisos não isentam o fornecedor de responsabilidade por guarda de bens.' },
+
+  { id:'Q31', q:'O fornecedor anuncia um “sorteio de prêmios” sem registro na Caixa Econômica. Isso é…',
+    a:['Permitido se for on-line','Proibido; depende de autorização oficial','Apenas uma promoção comum','Aceitável se for gratuita'],
+    c:1, tip:'Promoções com sorteio exigem autorização da Caixa (Lei 5.768/71).' },
+
+  { id:'Q32', q:'Em compras parceladas, o fornecedor deve informar…',
+    a:['Somente o valor da parcela','Apenas o preço à vista','O preço total com juros e o Custo Efetivo Total (CET)','Nada, se for no cartão'],
+    c:2, tip:'Transparência: deve constar valor total, juros e número de parcelas (CET).' }
 ];
+
+
 
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
 function pick(n){
   const arr=shuffle(BANK.slice());
-  return arr.slice(0,n).map(it=>{
+  const chosen = arr.slice(0,n); // simples e eficiente
+  return chosen.map(it=>{
     const map=it.a.map((t,i)=>({t,i})); shuffle(map);
     return {q:it.q, a:map.map(m=>m.t), c:map.findIndex(m=>m.i===it.c), tip:it.tip};
   });
@@ -459,14 +595,14 @@ function pick(n){
 const KM_KEY = 'procon_kiosk_mode';
 function applyKiosk(on){
   document.documentElement.classList.toggle('kiosk-on', !!on);
-  // força tema claro no totem para reduzir reflexo
-  if(on){ setTheme('light'); }
+  if(on){ setTheme('light'); } // reduz reflexo
   setVH();
 }
 const savedKM = localStorage.getItem(KM_KEY) === '1';
 applyKiosk(savedKM);
 document.getElementById('btnKiosk').addEventListener('click', ()=>{
   const on = !document.documentElement.classList.contains('kiosk-on');
+  ev('kiosk_toggle', { on });
   applyKiosk(on);
   localStorage.setItem(KM_KEY, on ? '1' : '0');
 });
@@ -485,7 +621,7 @@ function updateTimer(reset){
 async function splash(text='START'){ const d=document.createElement('div'); d.className='splash'; d.textContent=text; document.body.appendChild(d); await wait(700); d.remove(); }
 function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),1400); }
 
-/* Contatos */
+/* Contatos (local) */
 function loadContacts(){ try{return JSON.parse(localStorage.getItem(CONFIG.KEYS.CONTACTS)||'[]')}catch{return[]} }
 function saveContacts(list){ localStorage.setItem(CONFIG.KEYS.CONTACTS, JSON.stringify(list)); }
 function addContact(c){ const list=loadContacts(); list.push({...c, id: Math.random().toString(36).slice(2), ts: Date.now()}); saveContacts(list); }
@@ -493,10 +629,9 @@ function addContact(c){ const list=loadContacts(); list.push({...c, id: Math.ran
 /* Normalização do WhatsApp (apenas dígitos, garante DDD 21) */
 function normalizeWhats(s){
   const digits=(s||'').replace(/\D+/g,'').slice(0,9); // até 9 dígitos do número
-  return '21' + digits.padEnd(9,''); // salva como 21xxxxxxxxx (11 dígitos no total)
+  return '21' + digits.padEnd(9,''); // salva como 21xxxxxxxxx (11 dígitos)
 }
 function prettyWhats(s){
-  // formato (21) 9xxxx-xxxx se houver 9 dígitos após o DDD
   const d=normalizeWhats(s);
   const n=d.slice(2);
   if(n.length<9) return `(21) ${n}`;
@@ -524,6 +659,24 @@ async function exportContactsTxt(){
   setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();}, 800);
 }
 
+/* ===== Google Forms (submit via iframe) ===== */
+const GF = {
+  form: null,
+  fields: { name: null, phone: null }
+};
+function initGForm(){
+  GF.form = document.getElementById('gf');
+  if(!GF.form) return;
+  GF.fields.name  = document.getElementById('gf_name');
+  GF.fields.phone = document.getElementById('gf_phone');
+}
+function submitToGForm({ name, phone }){
+  if(!GF.form) return;
+  GF.fields.name.value  = (name || '').trim();
+  GF.fields.phone.value = String(phone || '').replace(/\D+/g,'').slice(0,11);
+  try { GF.form.submit(); } catch(e){}
+}
+
 /* Fluxo do jogo */
 async function reset(){
   S.pool=pick(CONFIG.N);
@@ -547,7 +700,10 @@ async function start(){
   S.whats = normalizeWhats(whatsRaw);
   S.insta = insta;
 
-  addContact({name:S.name, whats:S.whats, insta:S.insta});
+  addContact({name:S.name, whats:S.whats, insta:S.insta}); // local only
+  submitToGForm({ name: S.name, phone: S.whats });        // envia para o Google Forms
+
+  ev('quiz_start', { game_version:'v3.4', questions_total: CONFIG.N });
 
   await splash('START!'); ensureAudio(); try{audioCtx?.resume?.()}catch{}; sfx.start();
   await reset(); show('quiz'); nextQ();
@@ -572,9 +728,11 @@ function nextQ(){
 
 async function choose(i,btn,it){
   if(S.lock) return; S.lock=true;
+  ev('answer_click', { q_index: S.idx+1, total: S.pool.length });
   const ok=i===it.c;
   if(ok){ btn.classList.add('correct'); S.ok++; S.score+=250; $('#score').textContent=pad4(S.score); sfx.ok(); toast(it.tip); }
   else{ btn.classList.add('wrong'); S.lives--; $('#lives').textContent='❤'.repeat(Math.max(0,S.lives)); sfx.bad(); if(S.lives<=0){ await wait(700); return over(); } }
+  ev('answer_result', { q_index: S.idx+1, correct: !!ok, time_remaining: S.time, score: S.score });
   $$('.answer').forEach(b=>{ if(b!==btn) b.classList.add('disabled'); });
   await wait(900); S.idx++; S.lock=false; nextQ();
 }
@@ -588,6 +746,7 @@ function finish(title){
   $('#resultTitle').textContent=`${title}, ${S.name || 'Jogador'}! 🎉`;
   $('#hits').textContent=`${S.ok}/${total}`; $('#finalScore').textContent=pad4(S.score);
   renderBoard('#boardTable',board);
+  ev('quiz_finish', { result_title: title, correct: S.ok, total, score: S.score, time_remaining: S.time });
   show('result');
 }
 function win(){ clearInterval(S.tick); sfx.win(); splash('WIN!').then(()=>finish('PARABÉNS')); }
@@ -615,9 +774,8 @@ function renderBoard(sel,list=loadBoard()){
 /* Validação */
 const nameInput=$('#playerName'), whatsInput=$('#playerWhats'), instaInput=$('#playerInsta');
 function validWhats(s){
-  // exige ao menos 8 dígitos (do móvel) — ideal: 9 dígitos no RJ
   const d=(s||'').replace(/\D+/g,'');
-  return d.length>=8;
+  return d.length>=8; // ideal: 9 dígitos no RJ
 }
 function validateForm(){
   const name=(nameInput.value||'').trim();
@@ -630,6 +788,7 @@ function validateForm(){
 $('#btnStart').addEventListener('click', e=>{ e.preventDefault(); start(); });
 $('#btnAgain').addEventListener('click', e=>{
   e.preventDefault();
+  ev('play_again_click', {});
   clearInterval(S.tick);
   S.time=CONFIG.TIME; updateTimer(true);
   $('#score').textContent='0000';
@@ -648,30 +807,20 @@ $('#btnReset').addEventListener('click', ()=>{
   renderBoard('#boardTable');
 });
 $('#btnClearBoard').addEventListener('click', ()=>{ if(confirm('Limpar ranking local?')){ localStorage.setItem(CONFIG.KEYS.BOARD,'[]'); renderBoard('#boardTable'); }});
-$('#btnMute').addEventListener('click',()=>{ S.muted=!S.muted; $('#btnMute').textContent=S.muted?'🔇':'🔊'; $('#btnMute').setAttribute('aria-pressed', String(!S.muted)); });
+$('#btnMute').addEventListener('click',()=>{
+  S.muted=!S.muted;
+  ev('mute_toggle', { muted: S.muted });
+  $('#btnMute').textContent=S.muted?'🔇':'🔊';
+  $('#btnMute').setAttribute('aria-pressed', String(!S.muted));
+});
 $('#btnExport').addEventListener('click', exportContactsTxt);
 
-/* Temas antigos (compat, mas não usados) */
-const themeSel=$('#themeSel');
-function applyThemeOld(val){
-  if(val==='contrast'){
-    const r=document.documentElement.style;
-    r.setProperty('--bg','#000'); r.setProperty('--panel','#000'); r.setProperty('--ink','#fff'); r.setProperty('--muted','#ddd');
-    r.setProperty('--brand','#00ff66'); r.setProperty('--accent','#ffff00'); r.setProperty('--ans','#111');
-    r.setProperty('--ans-ok','#005a22'); r.setProperty('--ans-bad','#4d0010');
-  }else if(val==='cvd'){
-    const r=document.documentElement.style;
-    r.setProperty('--bg','#09111e'); r.setProperty('--panel','#0d1430cc'); r.setProperty('--ink','#f3f6ff'); r.setProperty('--muted','#c7cfe6');
-    r.setProperty('--brand','#2aa6f2'); r.setProperty('--accent','#ffd166'); r.setProperty('--ans','#1a234d');
-    r.setProperty('--ans-ok','#1c4f7a'); r.setProperty('--ans-bad','#6b2f4a');
-  }else{
-    document.documentElement.removeAttribute('style');
-  }
-  localStorage.setItem(CONFIG.KEYS.THEME,val);
-}
-themeSel?.addEventListener('change', e=>applyThemeOld(e.target.value));
+/* Boot */
 (function boot(){
-  renderBoard('#boardTable'); updateTimer(true); validateForm();
+  initGForm();              // inicializa integração com Google Forms
+  renderBoard('#boardTable');
+  updateTimer(true);
+  validateForm();
 })();
 </script>
 </body>
